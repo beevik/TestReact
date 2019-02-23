@@ -17,6 +17,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 const styles = (theme: Theme) => createStyles({
     root: {
         margin: '1em 1em',
+        minWidth: '900px',
     },
     table: {
         margin: '0em 0em',

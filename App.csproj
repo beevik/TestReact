@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Content Include="React\build\**\*" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="appsettings.json" CopyToPublishDirectory="PreserveNewest" CopyToOutputDirectory="PreserveNewest" />
     <Folder Include="React\src\" />
     <Folder Include="React\public\" />
   </ItemGroup>
