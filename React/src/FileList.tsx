@@ -12,7 +12,7 @@ import { WithStyles, createStyles } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 /**
- * Custom styles for elements of the FileList.
+ * Custom styles for the elements of the FileList.
  */
 const styles = (theme: Theme) => createStyles({
     root: {
@@ -34,7 +34,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 /**
- * A music file returned from the server.
+ * A music file returned by the server.
  */
 interface File {
     fileName: string;
@@ -55,13 +55,13 @@ enum LoadState {
 }
 
 /**
- * The FileList's React properties.
+ * The FileList react component's properties.
  */
 interface Props extends WithStyles<typeof styles> {
 }
 
 /**
- * The FileList's React state.
+ * The FileList react component's state.
  */
 interface State {
     files: Array<File>;
@@ -69,7 +69,7 @@ interface State {
 }
 
 /**
- * The FileList React component.
+ * The FileList react component.
  */
 class FileList extends Component<Props, State> {
     public displayName: string = FileList.name;
@@ -125,16 +125,14 @@ class FileList extends Component<Props, State> {
      */
     private renderLoading(): JSX.Element {
         const { classes } = this.props;
-        const progress = (
-            <div className={classes.progress}>
-                <LinearProgress />
-            </div>
-        );
-        return this.renderTable(<TableBody />, progress);
+        return this.renderTable(
+            <TableBody />,
+            <LinearProgress className={classes.progress} />);
     }
 
     /**
      * Render the table in its 'loaded' state.
+     *
      * @param files The array of files to render to the table.
      */
     private renderLoaded(files: File[]): JSX.Element {
@@ -172,8 +170,8 @@ class FileList extends Component<Props, State> {
     }
 
     /**
-     * Render the table using a template. The template includes the table
-     * body content and an optional 'append' element, which is displayed
+     * Render the table's content using a template. The template includes the
+     * table body content and an optional 'append' element, which is displayed
      * below the table.
      *
      * @param body The TableBody content.
