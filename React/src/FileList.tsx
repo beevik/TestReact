@@ -10,6 +10,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import { withStyles } from '@material-ui/core/styles';
 import { WithStyles, createStyles } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import { Set } from 'immutable';
 
 /**
  * Custom styles for the elements of the FileList.
@@ -37,6 +38,7 @@ const styles = (theme: Theme) => createStyles({
  * A music file returned by the server.
  */
 interface File {
+    id: number;
     fileName: string;
     songTitle: string;
     artistName: string;
@@ -66,6 +68,8 @@ interface Props extends WithStyles<typeof styles> {
 interface State {
     files: Array<File>;
     loadState: LoadState;
+    selection: Set<number>;
+    idCounter: number;
 }
 
 /**
@@ -79,7 +83,12 @@ class FileList extends Component<Props, State> {
      */
     constructor(props: Props) {
         super(props);
-        this.state = { files: [], loadState: LoadState.Loading };
+        this.state = {
+            files: [],
+            loadState: LoadState.Loading,
+            selection: Set<number>(),
+            idCounter: 1,
+        };
     }
 
     /**
@@ -94,11 +103,14 @@ class FileList extends Component<Props, State> {
             }
 
             const files = await response.json() as Array<File>;
-            this.setState({ files: files, loadState: LoadState.Loaded });
 
-            // this.setState(prevState => {
-            //     return { ...prevState, files: files, loadState: LoadState.Loaded }
-            // });
+            this.setState(state => {
+                return {
+                    files: files.map((f, index) => ({ ...f, id: index + state.idCounter })),
+                    loadState: LoadState.Loaded,
+                    idCounter: state.idCounter + files.length
+                };
+            });
         }
         catch (error) {
             this.setState({ loadState: LoadState.Failed });
@@ -138,10 +150,10 @@ class FileList extends Component<Props, State> {
     private renderLoaded(files: File[]): JSX.Element {
         const body = (
             <TableBody>
-                {files.map((file, index) => (
-                    <TableRow key={index} onClick={e => this.handleRowClick(e, index)}>
+                {files.map(file => (
+                    <TableRow key={file.id} onClick={e => this.handleRowClick(e, file)}>
                         <TableCell padding="checkbox">
-                            <Checkbox checked={false} />
+                            <Checkbox checked={this.isSelected(file)} />
                         </TableCell>
                         <TableCell component="th" scope="row">{file.fileName}</TableCell>
                         <TableCell align="left">{file.songTitle}</TableCell>
@@ -210,13 +222,34 @@ class FileList extends Component<Props, State> {
     }
 
     /**
-     * Handle a click on a table row.
+     * Return true if the file is currently selected.
+     *
+     * @param file The file in question.
+     */
+    private isSelected(file: File) {
+        return this.state.selection.contains(file.id);
+    }
+
+    /**
+     * Handle a click on a file in the table.
      *
      * @param evt The mouse event.
-     * @param index The file array index clicked.
+     * @param file The file that was clicked.
      */
-    private handleRowClick(evt: MouseEvent, index: number) {
-        console.log(`Row click ${index}: ${evt.screenX}, ${evt.screenY}`);
+    private handleRowClick(evt: MouseEvent, file: File) {
+        this.setState(state => {
+            const { selection } = state;
+
+            // Toggle the selection of the clicked file.
+            let newSelection: Set<number>;
+            if (selection.contains(file.id)) {
+                newSelection = selection.remove(file.id);
+            } else {
+                newSelection = selection.add(file.id);
+            }
+
+            return { selection: newSelection };
+        });
     }
 }
 
