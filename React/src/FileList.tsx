@@ -7,10 +7,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import classnames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import { WithStyles, createStyles } from '@material-ui/core';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { Set } from 'immutable';
+import './FileList.css';
 
 /**
  * Custom styles for the elements of the FileList.
@@ -148,12 +150,13 @@ class FileList extends Component<Props, State> {
      * @param files The array of files to render to the table.
      */
     private renderLoaded(files: File[]): JSX.Element {
+        const { classes } = this.props;
         const body = (
             <TableBody>
                 {files.map(file => (
-                    <TableRow key={file.id} onClick={e => this.handleRowClick(e, file)}>
+                    <TableRow key={file.id}>
                         <TableCell padding="checkbox">
-                            <Checkbox checked={this.isSelected(file)} />
+                            <Checkbox checked={this.isSelected(file)} onClick={e => this.handleRowClick(e, file)} />
                         </TableCell>
                         <TableCell component="th" scope="row">{file.fileName}</TableCell>
                         <TableCell align="left">{file.songTitle}</TableCell>
@@ -193,7 +196,7 @@ class FileList extends Component<Props, State> {
         const { classes } = this.props;
         return (
             <Paper className={classes.root}>
-                <Table className={classes.table}>
+                <Table className={classnames(classes.table, 'noselect')}>
                     <colgroup>
                         <col style={{ width: '5%' }} />
                         <col style={{ width: '25%' }} />
